@@ -1,0 +1,43 @@
+<div class="app-shell">
+  <header class="topbar">
+    <a class="brand" routerLink="/employees" aria-label="Employee Portal home">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke-linecap="round" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke-linecap="round" />
+        </svg>
+      </span>
+      <span class="brand-text">
+        <span class="brand-name">Employee<span>Portal</span></span>
+        <span class="brand-sub">People operations</span>
+      </span>
+    </a>
+
+    <nav class="main-nav" aria-label="Main navigation">
+      <a
+        routerLink="/employees"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >Employees</a>
+      <a routerLink="/employees/new" routerLinkActive="active">Add employee</a>
+    </nav>
+
+    <div class="workspace-pill">
+      <span class="status-dot" aria-hidden="true"></span>
+      <span>HR workspace</span>
+    </div>
+  </header>
+
+  <main class="page-wrap">
+    <router-outlet />
+  </main>
+
+  <footer class="app-footer">
+    <span>Employee Portal</span>
+    <span class="footer-sep" aria-hidden="true"></span>
+    <span>Angular · Spring Boot · MySQL</span>
+  </footer>
+
+  <app-toast />
+</div>

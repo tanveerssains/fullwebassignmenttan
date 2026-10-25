@@ -1,0 +1,324 @@
+<section class="page-head">
+  <div>
+    <p class="eyebrow">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      People directory
+    </p>
+    <h1>Employees</h1>
+    <p class="page-sub">
+      Keep your organisation's people, roles and assignments together in one place.
+    </p>
+  </div>
+
+  <a class="btn btn-primary" routerLink="/employees/new">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+      <path d="M12 5v14M5 12h14" stroke-linecap="round" />
+    </svg>
+    Add employee
+  </a>
+</section>
+
+<section class="stats-grid" aria-label="Directory summary">
+  <article class="stat-card">
+    <span class="stat-icon stat-indigo" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </span>
+    <div>
+      <span class="stat-label">Total employees</span>
+      <strong class="stat-value">{{ loading() ? '—' : employees().length }}</strong>
+    </div>
+  </article>
+
+  <article class="stat-card">
+    <span class="stat-icon stat-green" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="m9 11 3 3L22 4" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </span>
+    <div>
+      <span class="stat-label">Active now</span>
+      <strong class="stat-value">{{ loading() ? '—' : activeCount() }}</strong>
+    </div>
+  </article>
+
+  <article class="stat-card">
+    <span class="stat-icon stat-amber" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+        <rect x="3" y="4" width="18" height="18" rx="2" />
+        <path d="M16 2v4M8 2v4M3 10h18" stroke-linecap="round" />
+      </svg>
+    </span>
+    <div>
+      <span class="stat-label">On leave</span>
+      <strong class="stat-value">{{ loading() ? '—' : onLeaveCount() }}</strong>
+    </div>
+  </article>
+
+  <article class="stat-card">
+    <span class="stat-icon stat-blue" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+        <path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h.01M9 13h.01M9 17h.01M15 9h.01M15 13h.01M15 17h.01" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </span>
+    <div>
+      <span class="stat-label">Departments</span>
+      <strong class="stat-value">{{ loading() ? '—' : departmentCount() }}</strong>
+    </div>
+  </article>
+</section>
+
+<section class="list-card card">
+  <div class="toolbar">
+    <div class="search-box">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <circle cx="11" cy="11" r="7" />
+        <path d="m20 20-3.5-3.5" stroke-linecap="round" />
+      </svg>
+      <input
+        #searchInput
+        type="search"
+        [value]="searchTerm()"
+        (input)="onSearch($event)"
+        placeholder="Search name, code, email or role"
+        aria-label="Search employees"
+      />
+      @if (searchTerm()) {
+        <button
+          class="search-clear"
+          type="button"
+          (click)="searchTerm.set(''); searchInput.focus()"
+          aria-label="Clear search"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m6 6 12 12M18 6 6 18" stroke-linecap="round" />
+          </svg>
+        </button>
+      }
+    </div>
+
+    <div class="filters">
+      <label class="select-wrap">
+        <span class="sr-only">Filter by status</span>
+        <select [value]="statusFilter()" (change)="onStatusChange($event)">
+          @for (option of statusOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </label>
+
+      <label class="select-wrap">
+        <span class="sr-only">Filter by department</span>
+        <select [value]="departmentFilter()" (change)="onDepartmentChange($event)">
+          <option value="ALL">All departments</option>
+          @for (department of departments(); track department.id) {
+            <option [value]="department.id">{{ department.name }}</option>
+          }
+        </select>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </label>
+
+      @if (hasFilters()) {
+        <button class="btn btn-ghost clear-filters" type="button" (click)="clearFilters()">
+          Reset
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="table-scroll" aria-label="Loading employees" aria-busy="true">
+      <table class="employee-table">
+        <thead>
+          <tr>
+            <th>Employee</th>
+            <th>Department</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Joined</th>
+            <th class="align-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of [1, 2, 3, 4, 5]; track row) {
+            <tr class="skeleton-row">
+              <td>
+                <div class="person">
+                  <span class="skeleton skeleton-avatar"></span>
+                  <div class="skeleton-lines">
+                    <span class="skeleton skeleton-line w-60"></span>
+                    <span class="skeleton skeleton-line w-80"></span>
+                  </div>
+                </div>
+              </td>
+              <td><span class="skeleton skeleton-line w-70"></span></td>
+              <td><span class="skeleton skeleton-line w-60"></span></td>
+              <td><span class="skeleton skeleton-pill"></span></td>
+              <td><span class="skeleton skeleton-line w-50"></span></td>
+              <td><span class="skeleton skeleton-line w-40"></span></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else if (error()) {
+    <div class="state-box">
+      <span class="state-icon state-error" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M12 8v5m0 3h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </span>
+      <h2>Directory unavailable</h2>
+      <p>{{ error() }}</p>
+      <button class="btn btn-secondary" type="button" (click)="loadEmployees()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Try again
+      </button>
+    </div>
+  } @else if (filteredEmployees().length === 0) {
+    <div class="state-box">
+      <span class="state-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-3.5-3.5M8 11h6" stroke-linecap="round" />
+        </svg>
+      </span>
+      @if (employees().length === 0) {
+        <h2>No employees yet</h2>
+        <p>Start building your directory by adding the first employee record.</p>
+        <a class="btn btn-primary" routerLink="/employees/new">Add employee</a>
+      } @else {
+        <h2>No matching employees</h2>
+        <p>Try a different search, status or department to find who you are looking for.</p>
+        <button class="btn btn-secondary" type="button" (click)="clearFilters()">Clear filters</button>
+      }
+    </div>
+  } @else {
+    <div class="table-scroll">
+      <table class="employee-table">
+        <thead>
+          <tr>
+            <th>Employee</th>
+            <th>Department</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Joined</th>
+            <th class="align-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (employee of filteredEmployees(); track employee.id) {
+            <tr>
+              <td>
+                <div class="person">
+                  <span [class]="avatarClass(employee)" aria-hidden="true">{{ initials(employee) }}</span>
+                  <div class="person-text">
+                    <strong>{{ employee.fullName }}</strong>
+                    <span>{{ employee.employeeCode }} · {{ employee.email }}</span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="stacked">
+                  <strong>{{ employee.department.name }}</strong>
+                  @if (employee.department.location) {
+                    <span>{{ employee.department.location }}</span>
+                  }
+                </div>
+              </td>
+              <td>
+                <div class="stacked">
+                  <strong>{{ employee.designation }}</strong>
+                  <span>{{ employee.salary | currency: 'INR' : 'symbol' : '1.0-0' : 'en-IN' }} / month</span>
+                </div>
+              </td>
+              <td>
+                <span [class]="statusClass(employee.status)">{{ statusLabel(employee.status) }}</span>
+              </td>
+              <td class="nowrap">{{ employee.dateOfJoining | date: 'dd MMM yyyy' }}</td>
+              <td>
+                <div class="row-actions">
+                  <a
+                    class="icon-btn"
+                    [routerLink]="['/employees', employee.id, 'edit']"
+                    [attr.aria-label]="'Edit ' + employee.fullName"
+                    title="Edit employee"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+                      <path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </a>
+                  <button
+                    class="icon-btn danger"
+                    type="button"
+                    (click)="requestDelete(employee)"
+                    [attr.aria-label]="'Delete ' + employee.fullName"
+                    title="Delete employee"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+                      <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v5M14 11v5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-foot">
+      <span>
+        Showing <strong>{{ filteredEmployees().length }}</strong> of
+        <strong>{{ employees().length }}</strong> employees
+      </span>
+      <span class="table-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 11v5m0-8h.01" stroke-linecap="round" />
+        </svg>
+        Salaries in INR
+      </span>
+    </div>
+  }
+</section>
+
+@if (deleteTarget(); as target) {
+  <div class="modal-backdrop" (click)="closeDelete()" aria-hidden="true"></div>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="delete-title">
+    <span class="modal-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v5M14 11v5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </span>
+    <h2 id="delete-title">Delete employee?</h2>
+    <p>
+      This will permanently remove <strong>{{ target.fullName }}</strong>
+      ({{ target.employeeCode }}) from the directory. This action cannot be undone.
+    </p>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" type="button" (click)="closeDelete()" [disabled]="deleting()">
+        Cancel
+      </button>
+      <button class="btn btn-danger" type="button" (click)="confirmDelete()" [disabled]="deleting()">
+        @if (deleting()) {
+          <span class="spinner" aria-hidden="true"></span>
+          Deleting…
+        } @else {
+          Delete employee
+        }
+      </button>
+    </div>
+  </div>
+}

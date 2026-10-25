@@ -1,0 +1,322 @@
+<a class="back-link" routerLink="/employees">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+    <path d="m15 18-6-6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+  </svg>
+  Back to employees
+</a>
+
+<section class="page-head form-head">
+  <div>
+    <p class="eyebrow">{{ isEdit() ? 'Update record' : 'New record' }}</p>
+    <h1>{{ isEdit() ? 'Edit employee' : 'Add a new employee' }}</h1>
+    <p class="page-sub">
+      {{ isEdit()
+        ? 'Update this person’s details, role or assignment.'
+        : 'Create a complete employee record for the people directory.' }}
+    </p>
+  </div>
+</section>
+
+@if (loading()) {
+  <div class="card loading-card" aria-busy="true">
+    <span class="spinner dark" aria-hidden="true"></span>
+    <div>
+      <strong>Loading employee details</strong>
+      <span>Preparing the form and reference data…</span>
+    </div>
+  </div>
+} @else if (loadError()) {
+  <div class="card state-card">
+    <span class="state-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M12 8v5m0 3h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </span>
+    <h2>Employee not available</h2>
+    <p>{{ loadError() }}</p>
+    <a class="btn btn-secondary" routerLink="/employees">Back to employees</a>
+  </div>
+} @else {
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="form-layout">
+    <div class="form-main">
+      @if (formError()) {
+        <div class="alert alert-error" role="alert">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 8v5m0 3h.01" stroke-linecap="round" />
+          </svg>
+          <span>{{ formError() }}</span>
+        </div>
+      }
+
+      <section class="card form-card">
+        <header class="form-card-head">
+          <span class="section-badge">01</span>
+          <div>
+            <h2>Personal details</h2>
+            <p>Identity and contact information used across the directory.</p>
+          </div>
+        </header>
+
+        <div class="form-grid">
+          <div class="field">
+            <label for="employeeCode">Employee code <span class="required">*</span></label>
+            <input
+              id="employeeCode"
+              type="text"
+              formControlName="employeeCode"
+              placeholder="EMP007"
+              autocomplete="off"
+              [class.invalid]="!!fieldError('employeeCode')"
+              [attr.aria-invalid]="!!fieldError('employeeCode')"
+            />
+            @if (fieldError('employeeCode'); as error) {
+              <span class="error-text">{{ error }}</span>
+            } @else {
+              <span class="hint">A unique identifier for this employee.</span>
+            }
+          </div>
+
+          <div class="field">
+            <label for="phone">Phone</label>
+            <input
+              id="phone"
+              type="tel"
+              formControlName="phone"
+              placeholder="+91 98765 43210"
+              autocomplete="tel"
+              [class.invalid]="!!fieldError('phone')"
+              [attr.aria-invalid]="!!fieldError('phone')"
+            />
+            @if (fieldError('phone'); as error) {
+              <span class="error-text">{{ error }}</span>
+            } @else {
+              <span class="hint">Optional. Include the country code.</span>
+            }
+          </div>
+
+          <div class="field">
+            <label for="firstName">First name <span class="required">*</span></label>
+            <input
+              id="firstName"
+              type="text"
+              formControlName="firstName"
+              placeholder="Neha"
+              autocomplete="given-name"
+              [class.invalid]="!!fieldError('firstName')"
+              [attr.aria-invalid]="!!fieldError('firstName')"
+            />
+            @if (fieldError('firstName'); as error) {
+              <span class="error-text">{{ error }}</span>
+            }
+          </div>
+
+          <div class="field">
+            <label for="lastName">Last name <span class="required">*</span></label>
+            <input
+              id="lastName"
+              type="text"
+              formControlName="lastName"
+              placeholder="Gupta"
+              autocomplete="family-name"
+              [class.invalid]="!!fieldError('lastName')"
+              [attr.aria-invalid]="!!fieldError('lastName')"
+            />
+            @if (fieldError('lastName'); as error) {
+              <span class="error-text">{{ error }}</span>
+            }
+          </div>
+
+          <div class="field span-2">
+            <label for="email">Email address <span class="required">*</span></label>
+            <input
+              id="email"
+              type="email"
+              formControlName="email"
+              placeholder="neha.gupta@example.com"
+              autocomplete="email"
+              [class.invalid]="!!fieldError('email')"
+              [attr.aria-invalid]="!!fieldError('email')"
+            />
+            @if (fieldError('email'); as error) {
+              <span class="error-text">{{ error }}</span>
+            } @else {
+              <span class="hint">Must be unique across the organisation.</span>
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="card form-card">
+        <header class="form-card-head">
+          <span class="section-badge">02</span>
+          <div>
+            <h2>Role and assignment</h2>
+            <p>Set the role, department, project and joining details.</p>
+          </div>
+        </header>
+
+        <div class="form-grid">
+          <div class="field span-2">
+            <label for="designation">Designation <span class="required">*</span></label>
+            <input
+              id="designation"
+              type="text"
+              formControlName="designation"
+              placeholder="Software Engineer"
+              autocomplete="organization-title"
+              [class.invalid]="!!fieldError('designation')"
+              [attr.aria-invalid]="!!fieldError('designation')"
+            />
+            @if (fieldError('designation'); as error) {
+              <span class="error-text">{{ error }}</span>
+            }
+          </div>
+
+          <div class="field">
+            <label for="departmentId">Department <span class="required">*</span></label>
+            <select
+              id="departmentId"
+              formControlName="departmentId"
+              [class.invalid]="!!fieldError('departmentId')"
+              [attr.aria-invalid]="!!fieldError('departmentId')"
+            >
+              <option [ngValue]="null" disabled>Select a department</option>
+              @for (department of departments(); track department.id) {
+                <option [ngValue]="department.id">{{ department.name }}</option>
+              }
+            </select>
+            @if (fieldError('departmentId'); as error) {
+              <span class="error-text">{{ error }}</span>
+            } @else {
+              <span class="hint">Departments are managed reference data.</span>
+            }
+          </div>
+
+          <div class="field">
+            <label for="projectId">Project</label>
+            <select id="projectId" formControlName="projectId">
+              <option [ngValue]="null">No project assigned</option>
+              @for (project of projects(); track project.id) {
+                <option [ngValue]="project.id">
+                  {{ project.name }}{{ project.client ? ' · ' + project.client : '' }}
+                </option>
+              }
+            </select>
+            <span class="hint">Optional. Employees can be unassigned.</span>
+          </div>
+
+          <div class="field">
+            <label for="dateOfJoining">Date of joining <span class="required">*</span></label>
+            <input
+              id="dateOfJoining"
+              type="date"
+              formControlName="dateOfJoining"
+              [max]="maxDate"
+              [class.invalid]="!!fieldError('dateOfJoining')"
+              [attr.aria-invalid]="!!fieldError('dateOfJoining')"
+            />
+            @if (fieldError('dateOfJoining'); as error) {
+              <span class="error-text">{{ error }}</span>
+            }
+          </div>
+
+          <div class="field">
+            <label for="salary">Monthly salary (INR) <span class="required">*</span></label>
+            <div class="input-group">
+              <span class="prefix" aria-hidden="true">₹</span>
+              <input
+                id="salary"
+                type="number"
+                formControlName="salary"
+                placeholder="75000"
+                min="1"
+                step="0.01"
+                [class.invalid]="!!fieldError('salary')"
+                [attr.aria-invalid]="!!fieldError('salary')"
+              />
+            </div>
+            @if (fieldError('salary'); as error) {
+              <span class="error-text">{{ error }}</span>
+            } @else {
+              <span class="hint">Stored as a decimal in the database.</span>
+            }
+          </div>
+
+          <div class="field span-2">
+            <label for="status">Employment status <span class="required">*</span></label>
+            <select id="status" formControlName="status">
+              @for (status of statuses; track status.value) {
+                <option [ngValue]="status.value">{{ status.label }}</option>
+              }
+            </select>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="form-aside">
+      <div class="card preview-card">
+        <div class="preview-avatar" aria-hidden="true">{{ previewInitials() }}</div>
+        <h3>{{ previewName() }}</h3>
+        <p>{{ form.controls.designation.value || 'Designation not set' }}</p>
+        <span [class]="previewStatusClass()">{{ previewStatusLabel() }}</span>
+
+        <dl class="preview-list">
+          <div>
+            <dt>Employee code</dt>
+            <dd>{{ form.controls.employeeCode.value || '—' }}</dd>
+          </div>
+          <div>
+            <dt>Department</dt>
+            <dd>{{ previewDepartment() }}</dd>
+          </div>
+          <div>
+            <dt>Project</dt>
+            <dd>{{ previewProject() }}</dd>
+          </div>
+          <div>
+            <dt>Joining date</dt>
+            <dd>
+              {{ form.controls.dateOfJoining.value
+                ? (form.controls.dateOfJoining.value | date: 'dd MMM yyyy')
+                : '—' }}
+            </dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="card note-card">
+        <h3>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 11v5m0-8h.01" stroke-linecap="round" />
+          </svg>
+          Before you save
+        </h3>
+        <ul>
+          <li>Employee code and email must be unique.</li>
+          <li>The joining date cannot be in the future.</li>
+          <li>Department is required; project is optional.</li>
+          <li>Changes are saved straight to the database.</li>
+        </ul>
+      </div>
+    </aside>
+
+    <div class="form-actions card">
+      <a class="btn btn-secondary" routerLink="/employees">Cancel</a>
+      <button class="btn btn-primary" type="submit" [disabled]="saving()">
+        @if (saving()) {
+          <span class="spinner" aria-hidden="true"></span>
+          Saving…
+        } @else {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z" stroke-linejoin="round" />
+            <path d="M17 21v-8H7v8M7 3v5h8" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          {{ isEdit() ? 'Save changes' : 'Create employee' }}
+        }
+      </button>
+    </div>
+  </form>
+}

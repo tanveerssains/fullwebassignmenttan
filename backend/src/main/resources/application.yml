@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: employee-portal
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  jackson:
+    default-property-inclusion: non_null
+
+server:
+  port: ${SERVER_PORT:8080}
+
+app:
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:4200,http://127.0.0.1:4200}
+  seed:
+    enabled: ${APP_SEED_ENABLED:true}
